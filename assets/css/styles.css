@@ -183,7 +183,7 @@ a { color: inherit; }
 /* Team */
 .team-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .member { padding: 16px; }
-.member img, .member .avatar { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: center 30%; border-radius: 8px; margin-bottom: 16px; }
+.member img, .member .avatar { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: center 30%; border-radius: 8px; margin-bottom: 16px; }
 .member .avatar { display: grid; place-items: center; background: var(--mg-primary-container); color: var(--mg-primary); font-weight: 700; font-size: 32px; }
 .member h3 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
 .member p { color: var(--mg-slate); font-size: 14px; }
