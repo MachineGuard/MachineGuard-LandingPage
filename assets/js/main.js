@@ -66,12 +66,21 @@
   });
 
   /* ---------- Avoided-loss calculator (US14) ---------- */
+  var CALC = window.MG_CALC;
   var calcForm = document.getElementById('calc-form');
   var calcValue = document.getElementById('calc-value');
   var calcRate = document.getElementById('calc-rate');
+  var calcReduction = document.getElementById('calc-reduction');
+  var calcReductionOut = document.getElementById('calc-reduction-out');
   var calcOut = document.getElementById('calc-output');
   var calcDetail = document.getElementById('calc-detail');
+  var calcAnnual = document.getElementById('calc-annual');
+  var calcCta = document.getElementById('calc-cta');
   var lastEstimate = null;
+  var ERR_KEYS = { required: 'calc.err.required', positive: 'calc.err.positive', range: 'calc.err.rate' };
+
+  calcReduction.value = Math.round(CFG.avoidedLossReduction * 100);
+  calcReductionOut.textContent = calcReduction.value + '%';
 
   function money(n) {
     return 'S/ ' + n.toLocaleString(lang === 'es' ? 'es-PE' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -87,34 +96,44 @@
   }
 
   function validateCalc() {
-    var value = parseFloat(calcValue.value);
-    var rate = parseFloat(calcRate.value);
-    var ok = true;
-    if (calcValue.value === '') { setFieldError(calcValue, 'calc.err.required'); ok = false; }
-    else if (!(value > 0)) { setFieldError(calcValue, 'calc.err.positive'); ok = false; }
-    else setFieldError(calcValue, '');
-    if (calcRate.value === '') { setFieldError(calcRate, 'calc.err.required'); ok = false; }
-    else if (!(rate >= 0.1 && rate <= 100)) { setFieldError(calcRate, 'calc.err.rate'); ok = false; }
-    else setFieldError(calcRate, '');
-    return ok ? { value: value, rate: rate } : null;
+    var errors = CALC.validate(calcValue.value, calcRate.value);
+    setFieldError(calcValue, errors.value ? ERR_KEYS[errors.value] : '');
+    setFieldError(calcRate, errors.rate ? ERR_KEYS[errors.rate] : '');
+    return !errors.value && !errors.rate;
+  }
+
+  function computeEstimate() {
+    lastEstimate = CALC.estimate(calcValue.value, calcRate.value, calcReduction.value);
   }
 
   function renderCalcResult() {
     document.querySelectorAll('.error[data-key]').forEach(function (e) { if (e.dataset.key) e.textContent = t(e.dataset.key); });
-    if (!lastEstimate) { calcOut.textContent = 'S/ —'; calcDetail.textContent = t('calc.resultHelp'); return; }
+    calcReductionOut.textContent = calcReduction.value + '%';
+    var has = !!lastEstimate;
+    calcAnnual.hidden = !has;
+    calcCta.hidden = !has;
+    if (!has) { calcOut.textContent = 'S/ —'; calcDetail.textContent = t('calc.resultHelp'); return; }
     calcOut.textContent = money(lastEstimate.avoided);
-    calcDetail.textContent = t('calc.resultDetail').replace('{loss}', money(lastEstimate.loss));
+    calcDetail.textContent = t('calc.resultDetail').replace('{loss}', money(lastEstimate.loss)).replace('{pct}', String(lastEstimate.reductionPct));
+    calcAnnual.textContent = t('calc.annual').replace('{annual}', money(lastEstimate.annual));
   }
 
   calcForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var v = validateCalc();
-    if (!v) { lastEstimate = null; renderCalcResult(); return; }
-    var loss = v.value * (v.rate / 100);
-    lastEstimate = { loss: loss, avoided: loss * CFG.avoidedLossReduction };
+    if (!validateCalc()) { lastEstimate = null; renderCalcResult(); return; }
+    computeEstimate();
     renderCalcResult();
   });
-  [calcValue, calcRate].forEach(function (i) { i.addEventListener('input', function () { if (i.closest('.field').classList.contains('invalid')) validateCalc(); }); });
+  calcReduction.addEventListener('input', function () {
+    if (lastEstimate && validateCalc()) computeEstimate();
+    renderCalcResult();
+  });
+  [calcValue, calcRate].forEach(function (i) {
+    i.addEventListener('input', function () {
+      if (i.closest('.field').classList.contains('invalid')) validateCalc();
+      if (lastEstimate) { if (validateCalc()) computeEstimate(); else lastEstimate = null; renderCalcResult(); }
+    });
+  });
 
   /* ---------- Pilot request (US15) ---------- */
   var dialog = document.getElementById('pilot-dialog');
