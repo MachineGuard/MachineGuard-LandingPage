@@ -16,6 +16,9 @@
   <meta property="og:title" content="MachineGuard – Know before it spoils">
   <meta property="og:description" content="Low-cost temperature and humidity monitoring with real-time alerts for warehouses.">
   <meta property="og:image" content="https://machineguard.github.io/MachineGuard-LandingPage/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <meta property="og:url" content="https://machineguard.github.io/MachineGuard-LandingPage/">
 
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -215,10 +218,17 @@
             <p class="help" id="calc-rate-help" data-i18n="calc.rateHelp">Typical range for sensitive goods: 8%–15%.</p>
             <p class="error" id="calc-rate-error" aria-live="polite"></p>
           </div>
+          <div class="field field-reduction">
+            <label for="calc-reduction"><span data-i18n="calc.reduction">Assumed loss reduction</span>: <output id="calc-reduction-out" for="calc-reduction">20%</output></label>
+            <input id="calc-reduction" name="reduction" type="range" min="5" max="50" step="5" value="20" aria-describedby="calc-reduction-help">
+            <p class="help" id="calc-reduction-help" data-i18n="calc.reductionHelp">An assumption for this estimate, not a measured result. We validate it with your real data during the pilot.</p>
+          </div>
           <div class="calc-result" aria-live="polite">
             <p class="result-label" data-i18n="calc.result">Avoided-loss estimate</p>
             <p class="result-value mono" id="calc-output">S/ —</p>
-            <p class="help" id="calc-detail" data-i18n="calc.resultHelp">Per month, assuming MachineGuard reduces your losses by 20%.</p>
+            <p class="help" id="calc-detail" data-i18n="calc.resultHelp">Per month, based on the reduction you choose.</p>
+            <p class="result-annual" id="calc-annual" hidden></p>
+            <button type="button" class="btn btn-accent-green js-open-pilot result-cta" id="calc-cta" hidden data-i18n="calc.cta">Request a pilot with this estimate</button>
           </div>
           <div class="calc-actions">
             <button type="submit" class="btn btn-primary" data-i18n="calc.submit">Estimate savings</button>
@@ -231,13 +241,17 @@
       <div class="container">
         <h2 id="pricing-title" data-i18n="pricing.title">Pricing</h2>
         <p class="lead-sm muted" data-i18n="pricing.lead">Low-cost sensor points plus a monthly subscription. Every plan starts with a free 30-day pilot.</p>
+        <div class="price-banner">
+          <p class="price-main"><span class="mono">S/ 35–50</span> <span data-i18n="pricing.perPoint">per sensor point</span></p>
+          <p class="muted" data-i18n="pricing.model">ESP32 + DHT22 sensor node, plus a monthly subscription quoted during your pilot based on the number of sensor points.</p>
+        </div>
         <div class="card-grid-3 pricing">
           <article class="card plan">
             <h3>Starter</h3>
-            <p class="price"><span class="mono">S/ 35–50</span> <small data-i18n="pricing.perPoint">per sensor point</small></p>
+            <p class="scope mono" data-i18n="pricing.starter.scope">2 sensor points</p>
             <p class="muted" data-i18n="pricing.starter.d">For a single storage room that needs continuous checks.</p>
             <ul class="check-list">
-              <li data-i18n="pricing.starter.1">Starter kit with 2 sensor points</li>
+              <li data-i18n="pricing.starter.1">Starter kit to begin monitoring</li>
               <li data-i18n="pricing.f.dashboard">Web dashboard</li>
               <li data-i18n="pricing.f.alerts">Real-time alerts</li>
             </ul>
@@ -246,28 +260,28 @@
           <article class="card plan plan-featured">
             <span class="plan-badge" data-i18n="pricing.recommended">Recommended</span>
             <h3>Growth</h3>
-            <p class="price"><span class="mono">S/ 35–50</span> <small data-i18n="pricing.perPoint">per sensor point</small></p>
+            <p class="scope mono" data-i18n="pricing.growth.scope">Several zones</p>
             <p class="muted" data-i18n="pricing.growth.d">For warehouses with several zones and shifts.</p>
             <ul class="check-list">
-              <li data-i18n="pricing.growth.1">Up to 10 sensor points</li>
               <li data-i18n="pricing.f.mobile">Mobile push alerts and escalation</li>
               <li data-i18n="pricing.f.reports">Traceability reports</li>
+              <li data-i18n="pricing.f.history">Condition history for audits</li>
             </ul>
             <button type="button" class="btn btn-primary js-open-pilot" data-plan="Growth" data-i18n="cta.requestPilot">Request pilot</button>
           </article>
           <article class="card plan">
             <h3>Plus</h3>
-            <p class="price"><span class="mono">S/ 35–50</span> <small data-i18n="pricing.perPoint">per sensor point</small></p>
-            <p class="muted" data-i18n="pricing.plus.d">For multiple facilities that integrate with their ERP.</p>
+            <p class="scope mono" data-i18n="pricing.plus.scope">Multiple facilities</p>
+            <p class="muted" data-i18n="pricing.plus.d">For operations that integrate with their ERP.</p>
             <ul class="check-list">
-              <li data-i18n="pricing.plus.1">Multiple facilities</li>
               <li data-i18n="pricing.f.api">Public API for your ERP</li>
-              <li data-i18n="pricing.f.support">Priority support</li>
+              <li data-i18n="pricing.f.facilities">Several monitored facilities</li>
+              <li data-i18n="pricing.f.install">Assisted installation</li>
             </ul>
             <button type="button" class="btn btn-outline js-open-pilot" data-plan="Plus" data-i18n="cta.requestPilot">Request pilot</button>
           </article>
         </div>
-        <p class="note" data-i18n="pricing.note">The monthly subscription is quoted during your pilot, based on the number of sensor points.</p>
+        <p class="note" data-i18n="pricing.note">Plan contents are indicative and will be confirmed in your pilot quote.</p>
       </div>
     </section>
 
@@ -384,6 +398,7 @@
   </dialog>
 
   <script src="assets/js/config.js"></script>
+  <script src="assets/js/calc.js"></script>
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
