@@ -21,6 +21,7 @@
       : 'MachineGuard – Low-cost temperature & humidity monitoring for warehouses';
     if (persist) { try { localStorage.setItem('mg-lang', lang); } catch (e) { /* storage unavailable */ } }
     renderCalcResult();
+    setPilotStatus(pilotStatusKey);
   }
 
   function initialLang() {
@@ -141,10 +142,26 @@
   var success = document.getElementById('pilot-success');
   var status = document.getElementById('pilot-status');
   var lastOpener = null;
+  var PILOT = window.MG_PILOT;
+  var PILOT_ERR_KEYS = { unavailable: 'pilot.err.unavailable', invalid: 'pilot.err.invalid', throttled: 'pilot.err.throttled', error: 'pilot.err.network' };
+  var pilotSending = false;
+  var pilotStatusKey = '';
+
+  function setPilotStatus(key) {
+    pilotStatusKey = key || '';
+    status.textContent = pilotStatusKey ? t(pilotStatusKey) : '';
+  }
+
+  // Without apiBaseUrl nothing can be sent: say so and keep submit disabled.
+  function syncPilotAvailability() {
+    var available = PILOT.isConfigured(CFG);
+    form.querySelector('[type="submit"]').disabled = !available || pilotSending;
+    setPilotStatus(available ? '' : 'pilot.err.unavailable');
+  }
 
   function openPilot(opener) {
     lastOpener = opener;
-    form.hidden = false; success.hidden = true; status.textContent = '';
+    form.hidden = false; success.hidden = true; syncPilotAvailability();
     if (lastEstimate) form.elements.estimatedMonthlyLoss.value = lastEstimate.loss.toFixed(2);
     if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
     form.elements.companyName.focus();
@@ -195,31 +212,26 @@
     };
   }
 
-  function sendPilot(payload) {
-    if (!CFG.apiBaseUrl) {
-      console.info('[MachineGuard] Demo mode: apiBaseUrl is empty, pilot request not sent.', payload);
-      return new Promise(function (r) { setTimeout(r, 500); });
-    }
-    return fetch(CFG.apiBaseUrl.replace(/\/$/, '') + CFG.pilotRequestPath, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept-Language': lang },
-      body: JSON.stringify(payload)
-    }).then(function (res) { if (!res.ok) throw new Error('HTTP ' + res.status); });
-  }
-
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    status.textContent = '';
+    if (pilotSending) return;
+    setPilotStatus('');
+    if (!PILOT.isConfigured(CFG)) { syncPilotAvailability(); return; }
     if (!validatePilot()) return;
     var btn = form.querySelector('[type="submit"]');
+    pilotSending = true;
     btn.disabled = true; btn.textContent = t('pilot.sending');
-    sendPilot(buildPayload()).then(function () {
-      form.hidden = true; success.hidden = false; form.reset();
-      success.querySelector('button').focus();
-    }).catch(function () {
-      status.textContent = t('pilot.err.network');
+    PILOT.send(CFG, buildPayload(), lang).then(function (result) {
+      if (result.ok) {
+        form.hidden = true; success.hidden = false; form.reset();
+        success.querySelector('button').focus();
+        return;
+      }
+      setPilotStatus(PILOT_ERR_KEYS[result.reason] || 'pilot.err.network');
     }).then(function () {
-      btn.disabled = false; btn.textContent = t('pilot.submit');
+      pilotSending = false;
+      btn.textContent = t('pilot.submit');
+      btn.disabled = !PILOT.isConfigured(CFG);
     });
   });
 
