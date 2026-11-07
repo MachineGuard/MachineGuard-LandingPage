@@ -143,8 +143,7 @@
   var status = document.getElementById('pilot-status');
   var lastOpener = null;
   var PILOT = window.MG_PILOT;
-  var PILOT_ERR_KEYS = { unavailable: 'pilot.err.unavailable', invalid: 'pilot.err.invalid', throttled: 'pilot.err.throttled', error: 'pilot.err.network' };
-  var pilotSending = false;
+  var PILOT_ERR_KEYS = { invalid: 'pilot.err.invalid', throttled: 'pilot.err.throttled', error: 'pilot.err.network' };
   var pilotStatusKey = '';
 
   function setPilotStatus(key) {
@@ -152,16 +151,9 @@
     status.textContent = pilotStatusKey ? t(pilotStatusKey) : '';
   }
 
-  // Without apiBaseUrl nothing can be sent: say so and keep submit disabled.
-  function syncPilotAvailability() {
-    var available = PILOT.isConfigured(CFG);
-    form.querySelector('[type="submit"]').disabled = !available || pilotSending;
-    setPilotStatus(available ? '' : 'pilot.err.unavailable');
-  }
-
   function openPilot(opener) {
     lastOpener = opener;
-    form.hidden = false; success.hidden = true; syncPilotAvailability();
+    form.hidden = false; success.hidden = true; setPilotStatus('');
     if (lastEstimate) form.elements.estimatedMonthlyLoss.value = lastEstimate.loss.toFixed(2);
     if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
     form.elements.companyName.focus();
@@ -214,12 +206,9 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    if (pilotSending) return;
     setPilotStatus('');
-    if (!PILOT.isConfigured(CFG)) { syncPilotAvailability(); return; }
     if (!validatePilot()) return;
     var btn = form.querySelector('[type="submit"]');
-    pilotSending = true;
     btn.disabled = true; btn.textContent = t('pilot.sending');
     PILOT.send(CFG, buildPayload(), lang).then(function (result) {
       if (result.ok) {
@@ -229,9 +218,7 @@
       }
       setPilotStatus(PILOT_ERR_KEYS[result.reason] || 'pilot.err.network');
     }).then(function () {
-      pilotSending = false;
-      btn.textContent = t('pilot.submit');
-      btn.disabled = !PILOT.isConfigured(CFG);
+      btn.disabled = false; btn.textContent = t('pilot.submit');
     });
   });
 

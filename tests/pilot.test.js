@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { send, isConfigured, endpoint } = require('../assets/js/pilot.js');
+const { send, endpoint } = require('../assets/js/pilot.js');
 
 const CONFIG = { apiBaseUrl: 'https://core.example.test/', pilotRequestPath: '/api/v1/pilot-requests' };
 const PAYLOAD = {
@@ -26,11 +26,10 @@ test('endpoint joins apiBaseUrl without a trailing slash and the pilot path', ()
   assert.equal(endpoint({ apiBaseUrl: 'http://127.0.0.1:18090' }), 'http://127.0.0.1:18090/api/v1/pilot-requests');
 });
 
-test('empty or blank apiBaseUrl is not configured', () => {
-  assert.equal(isConfigured({ apiBaseUrl: '' }), false);
-  assert.equal(isConfigured({ apiBaseUrl: '   ' }), false);
-  assert.equal(isConfigured(undefined), false);
-  assert.equal(isConfigured(CONFIG), true);
+test('empty or blank apiBaseUrl has no endpoint', () => {
+  assert.equal(endpoint({ apiBaseUrl: '' }), '');
+  assert.equal(endpoint({ apiBaseUrl: '   ' }), '');
+  assert.equal(endpoint(undefined), '');
 });
 
 test('202 from the Core is the only success and sends the Landing payload as JSON', async () => {
@@ -66,8 +65,25 @@ test('5xx is a generic error and never success', async () => {
   assert.deepEqual(await send(CONFIG, PAYLOAD, 'en', fetchImpl), { ok: false, reason: 'error', status: 500 });
 });
 
-test('empty apiBaseUrl sends nothing and reports unavailable', async () => {
+test('empty apiBaseUrl keeps the previous demo behaviour: no request, console note, success after the demo delay', async () => {
   const { calls, fetchImpl } = recordingFetch(() => new Response(null, { status: 202 }));
-  assert.deepEqual(await send({ apiBaseUrl: '' }, PAYLOAD, 'en', fetchImpl), { ok: false, reason: 'unavailable' });
+  const infos = [];
+  const originalInfo = console.info;
+  console.info = (...args) => infos.push(args);
+  let result;
+  let elapsed;
+  try {
+    const started = Date.now();
+    result = await send({ apiBaseUrl: '   ' }, PAYLOAD, 'en', fetchImpl);
+    elapsed = Date.now() - started;
+  } finally {
+    console.info = originalInfo;
+  }
+
+  assert.deepEqual(result, { ok: true });
+  assert.ok(elapsed >= 400, `demo delay expected, got ${elapsed} ms`);
   assert.equal(calls.length, 0);
+  assert.equal(infos.length, 1);
+  assert.equal(infos[0][0], '[MachineGuard] Demo mode: apiBaseUrl is empty, pilot request not sent.');
+  assert.deepEqual(infos[0][1], PAYLOAD);
 });

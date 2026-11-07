@@ -11,10 +11,6 @@
     return base + ((config && config.pilotRequestPath) || DEFAULT_PATH);
   }
 
-  function isConfigured(config) {
-    return endpoint(config) !== '';
-  }
-
   function retryAfter(res) {
     var raw = res.headers && typeof res.headers.get === 'function' ? res.headers.get('Retry-After') : null;
     var seconds = parseInt(raw, 10);
@@ -30,11 +26,14 @@
     return { ok: false, reason: 'error', status: res.status };
   }
 
-  // Resolves with { ok: true } or { ok: false, reason: 'unavailable' | 'invalid' | 'throttled' | 'error' }.
-  // Never rejects.
+  // Resolves with { ok: true } or { ok: false, reason: 'invalid' | 'throttled' | 'error' }. Never rejects.
   function send(config, payload, lang, fetchImpl) {
     var url = endpoint(config);
-    if (!url) return Promise.resolve({ ok: false, reason: 'unavailable' });
+    if (!url) {
+      // With empty apiBaseUrl the form keeps the previous demo behaviour and does not send data.
+      console.info('[MachineGuard] Demo mode: apiBaseUrl is empty, pilot request not sent.', payload);
+      return new Promise(function (r) { setTimeout(r, 500); }).then(function () { return { ok: true }; });
+    }
     var doFetch = fetchImpl || (typeof fetch === 'function' ? fetch : null);
     if (!doFetch) return Promise.resolve({ ok: false, reason: 'error' });
 
@@ -53,7 +52,7 @@
       .then(function (result) { if (timer) clearTimeout(timer); return result; });
   }
 
-  var api = { endpoint: endpoint, isConfigured: isConfigured, send: send, TIMEOUT_MS: TIMEOUT_MS };
+  var api = { endpoint: endpoint, send: send, TIMEOUT_MS: TIMEOUT_MS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.MG_PILOT = api;
 })(typeof window !== 'undefined' ? window : globalThis);

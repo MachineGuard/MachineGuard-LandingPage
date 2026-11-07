@@ -68,7 +68,7 @@ window.MG_I18N = {
     'pilot.terms1': 'I accept the', 'pilot.terms2': 'and the', 'pilot.terms3': 'policy.',
     'pilot.cancel': 'Cancel', 'pilot.submit': 'Send request', 'pilot.sending': 'Sending…',
     'pilot.err.required': 'This field is required.', 'pilot.err.email': 'Enter a valid email address.', 'pilot.err.phone': 'Enter a valid phone number.',
-    'pilot.err.terms': 'You must accept the terms to continue.', 'pilot.err.network': 'We could not send your request. Please try again.', 'pilot.err.invalid': 'Check the form data and try again.', 'pilot.err.throttled': 'Too many requests. Please try again later.', 'pilot.err.unavailable': 'Online requests are not available in this version. Please try again later.',
+    'pilot.err.terms': 'You must accept the terms to continue.', 'pilot.err.network': 'We could not send your request. Please try again.', 'pilot.err.invalid': 'Check the form data and try again.', 'pilot.err.throttled': 'Too many requests. Please try again later.',
     'pilot.ok.title': 'Request received', 'pilot.ok.d': 'Thank you. Our team will contact you within two business days to schedule your pilot.', 'pilot.ok.close': 'Done'
   },
   es: {
@@ -140,7 +140,7 @@ window.MG_I18N = {
     'pilot.terms1': 'Acepto los', 'pilot.terms2': 'y la política de', 'pilot.terms3': '.',
     'pilot.cancel': 'Cancelar', 'pilot.submit': 'Enviar solicitud', 'pilot.sending': 'Enviando…',
     'pilot.err.required': 'Este campo es obligatorio.', 'pilot.err.email': 'Ingrese un correo válido.', 'pilot.err.phone': 'Ingrese un teléfono válido.',
-    'pilot.err.terms': 'Debe aceptar los términos para continuar.', 'pilot.err.network': 'No pudimos enviar su solicitud. Intente nuevamente.', 'pilot.err.invalid': 'Revise los datos del formulario e intente nuevamente.', 'pilot.err.throttled': 'Demasiadas solicitudes. Intente más tarde.', 'pilot.err.unavailable': 'Las solicitudes en línea no están disponibles en esta versión. Intente más tarde.',
+    'pilot.err.terms': 'Debe aceptar los términos para continuar.', 'pilot.err.network': 'No pudimos enviar su solicitud. Intente nuevamente.', 'pilot.err.invalid': 'Revise los datos del formulario e intente nuevamente.', 'pilot.err.throttled': 'Demasiadas solicitudes. Intente más tarde.',
     'pilot.ok.title': 'Solicitud recibida', 'pilot.ok.d': 'Gracias. Nuestro equipo se comunicará con usted en dos días hábiles para programar su piloto.', 'pilot.ok.close': 'Listo'
   }
 };
