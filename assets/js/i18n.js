@@ -1,7 +1,7 @@
 window.MG_I18N = {
   en: {
     skip: 'Skip to content', menu: 'Open menu', close: 'Close',
-    'nav.problem': 'Problem', 'nav.how': 'How it works', 'nav.pricing': 'Pricing', 'nav.calculator': 'Calculator',
+    'nav.problem': 'Problem', 'nav.how': 'How it works', 'nav.pricing': 'Pricing', 'nav.calculator': 'Calculator', 'nav.webApp': 'Web app', 'nav.android': 'Android app',
     'cta.requestPilot': 'Request pilot', 'cta.requestFreePilot': 'Request free pilot',
     'hero.title': 'Know before it spoils.',
     'hero.lead': 'Monitor temperature and humidity in real time. Get alerts before small changes become costly losses.',
@@ -73,7 +73,7 @@ window.MG_I18N = {
   },
   es: {
     skip: 'Saltar al contenido', menu: 'Abrir menú', close: 'Cerrar',
-    'nav.problem': 'Problema', 'nav.how': 'Cómo funciona', 'nav.pricing': 'Precios', 'nav.calculator': 'Calculadora',
+    'nav.problem': 'Problema', 'nav.how': 'Cómo funciona', 'nav.pricing': 'Precios', 'nav.calculator': 'Calculadora', 'nav.webApp': 'App web', 'nav.android': 'App Android',
     'cta.requestPilot': 'Solicitar piloto', 'cta.requestFreePilot': 'Solicitar piloto gratis',
     'hero.title': 'Anticípese a la merma.',
     'hero.lead': 'Monitoree temperatura y humedad en tiempo real. Reciba alertas antes de que pequeños cambios se conviertan en pérdidas costosas.',
