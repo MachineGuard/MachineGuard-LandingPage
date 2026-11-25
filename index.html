@@ -377,8 +377,9 @@
         </div>
         <div class="field field-full">
           <label for="pf-loss" data-i18n="pilot.loss">Estimated monthly loss (optional)</label>
-          <div class="input-affix"><span>S/</span><input id="pf-loss" name="estimatedMonthlyLoss" type="number" inputmode="decimal" min="0" step="any"></div>
-          <p class="help" data-i18n="pilot.lossHelp">Filled in automatically if you used the calculator.</p>
+          <div class="input-affix"><span>S/</span><input id="pf-loss" name="estimatedMonthlyLoss" type="number" inputmode="decimal" min="0" max="999999999999.99" step="any" aria-describedby="pf-loss-help pf-loss-error"></div>
+          <p class="help" id="pf-loss-help" data-i18n="pilot.lossHelp">Filled in automatically if you used the calculator.</p>
+          <p class="error" id="pf-loss-error" aria-live="polite"></p>
         </div>
         <div class="field field-full check">
           <input id="pf-terms" name="acceptTerms" type="checkbox" required>
@@ -395,7 +396,7 @@
     <div class="pilot-success" id="pilot-success" hidden>
       <svg class="icon icon-lg ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.5L16 9.5"/></svg>
       <h2 data-i18n="pilot.ok.title">Request received</h2>
-      <p data-i18n="pilot.ok.d">Thank you. Our team will contact you within two business days to schedule your pilot.</p>
+      <p data-i18n="pilot.ok.d">We will review your details to coordinate your pilot.</p>
       <button type="button" class="btn btn-primary js-close-pilot" data-i18n="pilot.ok.close">Done</button>
     </div>
   </dialog>

@@ -2,7 +2,7 @@
   'use strict';
 
   var DEFAULT_PATH = '/api/v1/pilot-requests';
-  var TIMEOUT_MS = 15000;
+  var TIMEOUT_MS = 75000;
 
   // Full intake URL, or '' when apiBaseUrl is empty. Empty means nothing is sent.
   function endpoint(config) {
@@ -26,7 +26,7 @@
     return { ok: false, reason: 'error', status: res.status };
   }
 
-  // Resolves with { ok: true } or { ok: false, reason: 'invalid' | 'throttled' | 'error' }. Never rejects.
+  // Resolves with { ok: true } or a reason: 'invalid', 'throttled', 'timeout', or 'error'.
   function send(config, payload, lang, fetchImpl) {
     var url = endpoint(config);
     if (!url) {
@@ -48,8 +48,10 @@
 
     return Promise.resolve()
       .then(function () { return doFetch(url, init); })
-      .then(classify, function () { return { ok: false, reason: 'error' }; })
-      .then(function (result) { if (timer) clearTimeout(timer); return result; });
+      .then(classify, function () {
+        return { ok: false, reason: controller && controller.signal.aborted ? 'timeout' : 'error' };
+      })
+      .finally(function () { if (timer !== null) clearTimeout(timer); });
   }
 
   var api = { endpoint: endpoint, send: send, TIMEOUT_MS: TIMEOUT_MS };

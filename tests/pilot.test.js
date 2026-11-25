@@ -60,6 +60,24 @@ test('network failure is a generic error', async () => {
   assert.deepEqual(await send(CONFIG, PAYLOAD, 'en', fetchImpl), { ok: false, reason: 'error' });
 });
 
+test('a slow connection is allowed past 15 seconds and aborts after 75 seconds', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  let signal;
+  const response = send(CONFIG, PAYLOAD, 'es', (url, init) => {
+    signal = init.signal;
+    return new Promise((resolve, reject) => {
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+    });
+  });
+
+  await Promise.resolve();
+  t.mock.timers.tick(15000);
+  assert.equal(signal.aborted, false);
+  t.mock.timers.tick(60000);
+  assert.equal(signal.aborted, true);
+  assert.deepEqual(await response, { ok: false, reason: 'timeout' });
+});
+
 test('5xx is a generic error and never success', async () => {
   const { fetchImpl } = recordingFetch(() => new Response('oops', { status: 500 }));
   assert.deepEqual(await send(CONFIG, PAYLOAD, 'en', fetchImpl), { ok: false, reason: 'error', status: 500 });

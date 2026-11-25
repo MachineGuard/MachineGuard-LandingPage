@@ -223,6 +223,7 @@ a { color: inherit; }
 .field.check label { font-weight: 400; }
 .field.check .error { width: 100%; }
 .form-status { margin-top: 16px; font-size: 14px; color: var(--mg-error); }
+.form-status.is-progress { color: var(--mg-navy); }
 .form-status:empty { display: none; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
 .pilot-success { text-align: center; display: grid; gap: 16px; justify-items: center; padding: 16px 0; }
