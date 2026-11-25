@@ -143,18 +143,23 @@
   var status = document.getElementById('pilot-status');
   var lastOpener = null;
   var PILOT = window.MG_PILOT;
-  var PILOT_ERR_KEYS = { invalid: 'pilot.err.invalid', throttled: 'pilot.err.throttled', error: 'pilot.err.network' };
+  var PILOT_ERR_KEYS = { invalid: 'pilot.err.invalid', throttled: 'pilot.err.throttled', timeout: 'pilot.err.timeout', error: 'pilot.err.network' };
+  var pilotSubmit = form.querySelector('[type="submit"]');
   var pilotStatusKey = '';
 
   function setPilotStatus(key) {
     pilotStatusKey = key || '';
     status.textContent = pilotStatusKey ? t(pilotStatusKey) : '';
+    status.classList.toggle('is-progress', pilotStatusKey === 'pilot.connecting');
   }
 
   function openPilot(opener) {
     lastOpener = opener;
-    form.hidden = false; success.hidden = true; setPilotStatus('');
-    if (lastEstimate) form.elements.estimatedMonthlyLoss.value = lastEstimate.loss.toFixed(2);
+    form.hidden = false; success.hidden = true;
+    var loss = form.elements.estimatedMonthlyLoss;
+    if (!pilotSubmit.disabled && lastEstimate && (opener.id === 'calc-cta' || !loss.value)) {
+      loss.value = lastEstimate.loss.toFixed(2);
+    }
     if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
     form.elements.companyName.focus();
   }
@@ -186,6 +191,10 @@
     if (!f.contactPhone.value.trim()) bad(f.contactPhone, 'pilot.err.required');
     else if (!PHONE_RE.test(f.contactPhone.value.trim())) bad(f.contactPhone, 'pilot.err.phone'); else fieldError(f.contactPhone, '');
     f.industry.value ? fieldError(f.industry, '') : bad(f.industry, 'pilot.err.required');
+    var loss = f.estimatedMonthlyLoss;
+    if (loss.validity.badInput || loss.validity.rangeUnderflow || loss.validity.rangeOverflow) {
+      bad(loss, 'pilot.err.loss');
+    } else fieldError(loss, '');
     f.acceptTerms.checked ? fieldError(f.acceptTerms, '') : bad(f.acceptTerms, 'pilot.err.terms');
     if (firstBad) firstBad.focus();
     return ok;
@@ -206,19 +215,24 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (pilotSubmit.disabled) return;
     setPilotStatus('');
     if (!validatePilot()) return;
-    var btn = form.querySelector('[type="submit"]');
-    btn.disabled = true; btn.textContent = t('pilot.sending');
+    pilotSubmit.disabled = true;
+    pilotSubmit.textContent = t('pilot.sending');
+    var connectingTimer = setTimeout(function () { setPilotStatus('pilot.connecting'); }, 3000);
     PILOT.send(CFG, buildPayload(), lang).then(function (result) {
       if (result.ok) {
+        setPilotStatus('');
         form.hidden = true; success.hidden = false; form.reset();
         success.querySelector('button').focus();
         return;
       }
       setPilotStatus(PILOT_ERR_KEYS[result.reason] || 'pilot.err.network');
-    }).then(function () {
-      btn.disabled = false; btn.textContent = t('pilot.submit');
+    }).finally(function () {
+      clearTimeout(connectingTimer);
+      pilotSubmit.disabled = false;
+      pilotSubmit.textContent = t('pilot.submit');
     });
   });
 
