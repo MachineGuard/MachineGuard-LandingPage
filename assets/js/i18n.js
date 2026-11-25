@@ -67,9 +67,12 @@ window.MG_I18N = {
     'pilot.loss': 'Estimated monthly loss (optional)', 'pilot.lossHelp': 'Filled in automatically if you used the calculator.',
     'pilot.terms1': 'I accept the', 'pilot.terms2': 'and the', 'pilot.terms3': 'policy.',
     'pilot.cancel': 'Cancel', 'pilot.submit': 'Send request', 'pilot.sending': 'Sending…',
+    'pilot.connecting': 'Connecting to the server. This may take a moment.',
+    'pilot.err.timeout': 'We could not confirm receipt. Your details are still in the form. Please try again.',
+    'pilot.err.loss': 'Enter an amount from S/ 0 to S/ 999,999,999,999.99.',
     'pilot.err.required': 'This field is required.', 'pilot.err.email': 'Enter a valid email address.', 'pilot.err.phone': 'Enter a valid phone number.',
     'pilot.err.terms': 'You must accept the terms to continue.', 'pilot.err.network': 'We could not send your request. Please try again.', 'pilot.err.invalid': 'Check the form data and try again.', 'pilot.err.throttled': 'Too many requests. Please try again later.',
-    'pilot.ok.title': 'Request received', 'pilot.ok.d': 'Thank you. Our team will contact you within two business days to schedule your pilot.', 'pilot.ok.close': 'Done'
+    'pilot.ok.title': 'Request received', 'pilot.ok.d': 'We will review your details to coordinate your pilot.', 'pilot.ok.close': 'Done'
   },
   es: {
     skip: 'Saltar al contenido', menu: 'Abrir menú', close: 'Cerrar',
@@ -139,8 +142,11 @@ window.MG_I18N = {
     'pilot.loss': 'Pérdida mensual estimada (opcional)', 'pilot.lossHelp': 'Se completa automáticamente si usó la calculadora.',
     'pilot.terms1': 'Acepto los', 'pilot.terms2': 'y la política de', 'pilot.terms3': '.',
     'pilot.cancel': 'Cancelar', 'pilot.submit': 'Enviar solicitud', 'pilot.sending': 'Enviando…',
+    'pilot.connecting': 'Estamos conectando con el servidor. Esto puede tardar un momento.',
+    'pilot.err.timeout': 'No pudimos confirmar la recepción. Sus datos siguen en el formulario. Intente nuevamente.',
+    'pilot.err.loss': 'Ingrese un importe entre S/ 0 y S/ 999.999.999.999,99.',
     'pilot.err.required': 'Este campo es obligatorio.', 'pilot.err.email': 'Ingrese un correo válido.', 'pilot.err.phone': 'Ingrese un teléfono válido.',
     'pilot.err.terms': 'Debe aceptar los términos para continuar.', 'pilot.err.network': 'No pudimos enviar su solicitud. Intente nuevamente.', 'pilot.err.invalid': 'Revise los datos del formulario e intente nuevamente.', 'pilot.err.throttled': 'Demasiadas solicitudes. Intente más tarde.',
-    'pilot.ok.title': 'Solicitud recibida', 'pilot.ok.d': 'Gracias. Nuestro equipo se comunicará con usted en dos días hábiles para programar su piloto.', 'pilot.ok.close': 'Listo'
+    'pilot.ok.title': 'Solicitud recibida', 'pilot.ok.d': 'Revisaremos sus datos para coordinar el piloto.', 'pilot.ok.close': 'Listo'
   }
 };
